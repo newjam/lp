@@ -16,7 +16,7 @@ prob += mineOutOre == mineInLabor
 
 farmInTools   = LpVariable("farmInTools", 0, 5)
 farmInLabor   = LpVariable("farmInLabor", 0, 5)
-farmOutFood   = LpVariable("farmOutFood", 0, 10)
+farmOutFood   = LpVariable("farmOutFood", 0, 5 + 5)
 
 # tools can't work themselves!
 prob += farmInTools == farmInLabor
@@ -24,11 +24,11 @@ prob += farmInTools == farmInLabor
 # food is created by farmers and tools
 prob += farmOutFood == farmInTools + farmInLabor
 
-factoryInOre    = LpVariable("factoryInOre" , 0, 5)
+factoryInOre    = LpVariable("factoryInOre"   , 0, 5)
 factoryInLabor  = LpVariable("factoryInLabor" , 0, 5)
-factoryOutTools = LpVariable("factoryOutTools", 0, 10)
+factoryOutTools = LpVariable("factoryOutTools", 0, 5 + 5)
 
-# tools are created by workers.
+# tools are created by workers from ore
 prob += factoryInOre == factoryInLabor
 prob += factoryOutTools == factoryInLabor + factoryInOre
 
@@ -51,7 +51,7 @@ status = prob.solve(GLPK())
 print LpStatus[status]
 
 # display results
-print 'House:', value(houseInFood), 'food' , '=>', value(houseOutLabor), 'labor'
-print 'Mine:', value(mineInLabor), 'labor', '=>', value(mineOutOre), 'ore'
-print 'Factory:', value(factoryInLabor), 'labor', '+', value(factoryInOre), 'ore', '=>', value(factoryOutTools), 'tools'
-print 'Farm:', value(farmInLabor), 'labor', '+', value(farmInTools), 'tools', '=>', value(farmOutFood), 'food'
+print 'House   {:>5} food                => {:>5} labor'.format(value(houseInFood), value(houseOutLabor))
+print 'Mine    {:>5} labor               => {:>5} ore'.format(value(mineInLabor), value(mineOutOre))
+print 'Factory {:>5} labor + {:>5} ore   => {:>5} tools'.format(value(factoryInLabor), value(factoryInOre), value(factoryOutTools))
+print 'Farm    {:>5} labor + {:>5} tools => {:>5} food'.format(value(farmInLabor), value(farmInTools), value(farmOutFood))
